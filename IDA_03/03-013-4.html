@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Test</title>
+    <script>
+        //canvasの中身を示すもの
+        let ctx;
+        //canvasのwidth 幅
+        let cw;
+        //canvasのheight 高さ
+        let ch;
+        //ループする回数
+        const loopNum = 255;
+
+        //初期化処理
+        function init() {
+            //IDがmycanvasのものをcanvasという変数にいれておく
+            let canvas = document.getElementById("mycanvas");
+            //canvasが存在しないか、canvasの中身がなければ処理終了
+            if(!canvas ||!canvas.getContext){
+                return false;
+            }
+
+            //canvasの中身を指し示すものを代入
+            ctx = canvas.getContext("2d");
+            //全体の透明度を設定
+            ctx.globalAlpha = 0.5;
+            //canvasの幅・高さを代入しておく
+            cw = canvas.width;
+            ch = canvas.height;
+
+            //実際の描画処理
+            draw();
+
+            //一定時間ごとに書き換える
+            setInterval("draw()",200);
+        }
+
+        function draw() {
+            //画面をリセットする
+            ctx.fillStyle = "rgba(255,255,255,0.3)";
+            ctx.fillRect(0,0,cw,ch);
+
+            //処理をループ
+            for (let i=0;i<loopNum;i++){
+                //ランダムな線の色を設定
+                ctx.strokeStyle = "rgba("+getRandomColor()+","+getRandomColor()+","+getRandomColor()+","+getRandomAlpha()+")";
+                ctx.lineWidth = 1;
+
+                //線の描画
+                ctx.beginPath();
+                ctx.moveTo(2*i*cw/loopNum,4);
+                ctx.lineTo(5*cw-i*cw/loopNum,ch);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(2,i*cw/loopNum);
+                ctx.lineTo(cw-i*cw/loopNum,ch);
+                ctx.stroke();
+            }
+        }
+
+            //ランダムな数値を返す
+            function getRandomNum(num){
+                return Math.floor(Math.random()*num);
+        }
+            function getRandomColor(){
+                return Math.floor(Math.random()*255);
+        }
+            function getRandomAlpha(){
+                return Math.random();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <h1>Canvas Test</h1>
+    <canvas id="mycanvas" width="1000" height="800"></canvas>
+</body>
+</html>

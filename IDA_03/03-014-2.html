@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript">
+        let ctx;
+        let cw;
+        let ch;
+        let loopNum = 10;
+        let i = 0;
+
+        function init() {
+            let canvas = document.getElementById("mycanvas");
+            if(!canvas ||!canvas.getContext){
+                return false;
+            }
+            ctx = canvas.getContext("2d");
+            cw = canvas.width;
+            ch = canvas.height;
+            loopNum = Math.floor(Math.min(cw/2,ch/2)/10);
+
+            ctx.globalAlpha = 0.5;
+
+            draw();
+
+            setInterval("draw()",200);//
+        }
+
+        function draw() {
+            ctx.fillStyle = "rgba(255,255,255,0.3)";
+            ctx.fillRect(0,0,cw,ch);
+
+            for (let i=0;i<loopNum;i++){
+                /* 色 */
+                ctx.strokeStyle = "rgba("+getRandomColor()+","+getRandomColor()+","+getRandomColor()+","+getRandomAlpha()+")";
+                ctx.lineWidth = 1;
+
+                ctx.strokeRect(cw/2 - 10*i, ch/2 - 10*i, 10*i*2, 10*i*2);
+
+                i++;
+                if(i >= loopNum) {
+                    i = 0;
+                }
+            }
+        }
+        function getRandomNum(num){
+                return Math.floor(Math.random()*num);
+        }
+        function getRandomColor(){
+                return getRandomNum(255);
+        }
+        function getRandomAlpha(){
+                return Math.random();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <h1>Canvas Test</h1>
+    <canvas id="mycanvas" width="500" height="500"></canvas>
+</body>
+</html>

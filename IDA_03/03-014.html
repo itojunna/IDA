@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript">
+        let ctx;
+        let cw;
+        let ch;
+        let circle_delta = 0;
+        let loopNum = 10;
+
+        function init() {
+            let canvas = document.getElementById("mycanvas");
+            if(!canvas ||!canvas.getContext){
+                return false;
+            }
+            ctx = canvas.getContext("2d");
+            cw = canvas.width;
+            ch = canvas.height;
+            loopNum = Math.floor(Math.min(cw/2,ch/2)/10);
+
+            ctx.globalAlpha = 0.5;
+
+            draw();
+
+            setInterval("draw()",200);
+        }
+
+        function draw() {
+            circle_delta ++;
+            if (circle_delta > 9){
+                circle_delta = 0;
+            }
+            ctx.fillStyle = "rgba(255,255,255,0.3)";
+            ctx.fillRect(0,0,cw,ch);
+
+            for (let i=0;i<loopNum;i++){
+                /* 色 */
+                ctx.strokeStyle = "rgba("+getRandomColor()+","+getRandomColor()+","+getRandomColor()+","+getRandomAlpha()+")";
+                ctx.lineWidth = 1;
+
+                //円-----------
+                ctx.beginPath();
+                ctx.arc(cw/2,ch/2,i*10+circle_delta,0,360/180*Math.PI,true);
+                ctx.stroke();
+            }
+        }
+        function getRandomNum(num){
+                return Math.floor(Math.random()*num);
+        }
+        function getRandomColor(){
+                return getRandomNum(255);
+        }
+        function getRandomAlpha(){
+                return Math.random();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <h1>Canvas Test</h1>
+    <canvas id="mycanvas" width="500" height="500"></canvas>
+</body>
+</html>
