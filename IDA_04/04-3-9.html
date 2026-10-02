@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        let ctx;
+        let cw;
+        let ch;
+
+        const d = 50; 
+        const r = d/2;
+
+        //パーティクルの準備
+        
+
+        function init() {
+            let canvas = document.getElementById("mycanvas");
+            if(!canvas || !canvas.getContext){
+                return false;
+            }
+
+            ctx = canvas.getContext("2d");
+            cw = canvas.width;
+            ch = canvas.height;
+
+            drawShapes();
+        }
+
+        function drawShapes() {
+            ctx.clearRect(0, 0, cw, ch);
+
+            for(let y = r; y < ch ; y += d) {
+                for(let x = r; x < cw + r; x += d) {
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, r, 0, Math.PI*2);
+                    ctx.fillStyle = "Orange";
+                    ctx.fill();
+                }
+            }
+        }
+    </script>
+</head>
+<body onload="init()">
+    <h1>Document</h1>
+    <canvas id="mycanvas" width="1000" height="900"></canvas>
+</body>
+</html>
