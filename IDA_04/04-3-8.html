@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Speed Lines Only</title>
+    <script>
+        let ctx;
+        let cw;
+        let ch;
+
+        // 集中線の準備
+        const distance_line = 500;
+        let lines = [];
+
+        //【演出管理用の変数】
+        let mode = "EXPLODE";   //現在の状態：EXPLODE（爆発）/SLOW（スロー）/RETURN（戻る）
+        let timeScale = 1.0;    //時間の流れ/速さ倍率
+        let timer = 0;          //タイマー
+        let centerX;            //中心X
+        let centerY;            //中心Y
+
+        //初期化処理
+        function init() {
+            let canvas = document.getElementById("mycanvas");
+            if(!canvas || !canvas.getContext){
+                return false;
+            }
+
+            ctx = canvas.getContext("2d");
+            cw = canvas.width;
+            ch = canvas.height;
+
+            //中心点を設定
+            centerX = cw/2;
+            centerY = ch/2;
+
+            //エフェクトを生成
+            resetAllEffects();
+
+            //描画開始
+            draw();
+
+            setInterval(draw, 33);
+        }
+
+        // 集中線をリセット・配置する関数
+        function resetAllEffects() {
+            lines = [];
+            for(let j=0; j<distance_line; j++){
+                let angle = (Math.PI * 2 / distance_line) * j + (Math.random() * 0.1); 
+                let maxDist = Math.random() * 500 + 350;  //伸びる最大の長さ
+                
+                //青系統の半透明
+                let color = "rgba(50, 120, 255," + (Math.random() * 0.6 + 0.2) + ")";
+                let width = Math.random() * 3 + 1;
+                lines[j] = new Line(angle, maxDist, color, width);
+            }
+        }
+
+        // 集中線用 Line クラス
+        class Line {
+            constructor(angle, maxDistance, color, width) {
+                this.angle = angle;          
+                this.length = 10;            
+                this.maxLength = maxDistance;
+                this.color = color;
+                this.width = width;
+            }
+            draw(){
+                let innerX = centerX + Math.cos(this.angle) * (this.length * 0.1); 
+                let innerY = centerY + Math.sin(this.angle) * (this.length * 0.1);
+                let outerX = centerX + Math.cos(this.angle) * this.length;        
+                let outerY = centerY + Math.sin(this.angle) * this.length;
+
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = this.width;
+                ctx.beginPath();
+                ctx.moveTo(innerX, innerY);
+                ctx.lineTo(outerX, outerY);
+                ctx.stroke();
+            }
+            update(){
+                if (mode === "EXPLODE") {
+                    this.length += (this.maxLength - this.length) * 0.1 * timeScale;
+                } 
+                else if (mode === "RETURN") {
+                    this.length += (0 - this.length) * 0.2;
+                }
+
+                this.draw();
+            }
+        }
+
+        //ループ
+        function draw() {
+            //背景（白）
+            ctx.fillStyle = "rgba(255,255,255,1)";
+            ctx.fillRect(0,0,cw,ch);
+
+            //【時間と演出状態のコントロール】
+            if (mode === "EXPLODE") {
+                timeScale -= 0.04; 
+                if (timeScale <= 0.02) {
+                    timeScale = 0.02; 
+                    mode = "SLOW";
+                    timer = 0;
+                }
+            } 
+            else if (mode === "SLOW") {
+                timer++;
+                if (timer > 20) {
+                    mode = "RETURN";
+                    timeScale = 1.8;
+                    timer = 0;
+                }
+            } 
+            else if (mode === "RETURN") {
+                timer++;
+                if (timer > 25) {
+                    mode = "EXPLODE";
+                    timeScale = 1.0; 
+                    resetAllEffects(); 
+                }
+            }
+
+            // 線の描画のみ実行
+            for(let j=0; j<distance_line; j++){
+                lines[j].update();
+            }
+        }
+    </script>
+</head>
+<body onload="init()">
+    <h1>Canvas Speed Lines Only</h1>
+    <canvas id="mycanvas" width="1000" height="900"></canvas>
+</body>
+</html>
