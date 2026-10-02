@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canvas Particle Explosion & Return</title>
+    <title>Document</title>
     <script>
         let ctx;
         let cw;
@@ -41,14 +41,14 @@
             centerX = cw/2;
             centerY = ch/2;
 
-            //エフェクトを生成・配置する関数（ループできるように分離）
+            //エフェクトを生成・配置する関数
             resetAllEffects();
 
             //実際の描画処理
             draw();
 
             //一定時間ごとに書き換える
-            setInterval(draw, 33); // 文字列指定ではなく関数オブジェクトを渡す形に推奨変更
+            setInterval(draw, 33);
         }
 
         //図形を中央に配置して速度をランダムにするリセット関数
@@ -215,7 +215,7 @@
                 }
             } 
             else if (mode === "RETURN") {
-                // 4.戻り中：ある程度中心に集まる時間を待ったら、再度新しく爆発させる
+                // 4.戻り中:ある程度中心に集まる時間を待ったら、再度新しく爆発させる
                 timer++;
                 if (timer > 25) {
                     mode = "EXPLODE";
