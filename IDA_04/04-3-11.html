@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>中心から崩れるパーティクル</title>
+    <script>
+        let ctx;  //canvasの中身を示すもの
+        let cw;  //canvasのwidth 幅
+        let ch;  //canvasのheight 高さ
+        let particles = [];
+        const distance = 400;
+        const cols = 20;  //列数（横方向の個数）
+
+        function getRandomColor() { return Math.floor(Math.random() * 256); }
+
+        //応用：パーティクルクラス(半径/色/速度/角度)
+        class Particle {
+            constructor(radius, color, speed, angle) {
+                this.radius = radius;
+                this.color = color;
+                this.position = { x: 0, y: 0 };
+                
+                //中心から外へ向かう速度
+                this.vx = Math.cos(angle) * speed;  //1フレームでX座標がどれだけ動くか
+                this.vy = Math.sin(angle) * speed;  //1フレームでY座標がどれだけ動くか
+            }
+
+            //動かす
+            update() {
+                this.position.x += this.vx;  //今のX座標に速度分を足す
+                this.position.y += this.vy;  //今のY座標に速度分を足す
+            }
+
+            //描画する
+            draw() {
+                ctx.beginPath();
+                //ctx.arc(中心のX, 中心のY, 半径, スタート角度, ゴール角度(360度))
+                ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        //初期化処理
+        function init() {
+            let canvas = document.getElementById("mycanvas");
+            if(!canvas || !canvas.getContext) return;
+
+            ctx = canvas.getContext("2d");
+            cw = canvas.width;
+            ch = canvas.height;
+
+            const spacingX = cw / cols;   //500 / 20 = 25
+            const spacingY = ch / cols;   //500 / 20 = 25
+            const radius = spacingX / 2;  //25 / 2 = 12.5
+
+            //中心点（キャンバスの真ん中 250, 250）
+            const centerX = cw / 2;
+            const centerY = ch / 2;
+
+            //「Math.floor」を使った配列
+            for (let i = 0; i < distance; i++) {
+                const c = i%cols;  //横の列（0～19）                
+                const r = Math.floor(i/cols);  //縦の列（0が20行目、1が21行目、2が22行目・・・）
+                
+                //各パーティクルの座標を計算
+                const targetX = (c * spacingX) + radius;
+                const targetY = (r * spacingY) + radius;
+
+                //中心からの角度と速度を計算
+                const angle = Math.atan2(targetY - centerY, targetX - centerX);
+                const speed = Math.random() * 2 + 0.5; 
+
+                //配列「Particles」のi番目に格納
+                particles[i] = new Particle(radius, "rgb(" + getRandomColor() + ", 0, 0)", speed, angle);
+                //円の初期位置
+                particles[i].position.x = targetX;
+                particles[i].position.y = targetY;
+            }
+            
+            //最初はアニメーション（ループ）させず、1回のみ描画して止めておく
+            firstDraw();
+
+            //キャンバスをクリックしたら、アニメーションループ（崩れる処理）をスタート
+            canvas.addEventListener("click", startAnimate);
+        }
+
+        //最初（静止状態）の描画関数
+        function firstDraw() {
+            ctx.clearRect(0, 0, cw, ch);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].draw();
+            }
+        }
+
+        //クリックされたら動かすためのきっかけ関数
+        function startAnimate() {
+            //ループ関数（パラパラ漫画の仕組み）を実行
+            loop();
+        }
+
+        //毎フレーム実行されるループ処理（崩れていくアニメーション）
+        function loop() {
+            ctx.clearRect(0, 0, cw, ch);
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(); 
+                particles[i].draw();   
+            }
+
+            requestAnimationFrame(loop);  //ループを続ける
+        }
+    </script>
+</head>
+<body onload="init()">
+    <h1>Document</h1>
+    <canvas id="mycanvas" width="1000" height="900"></canvas>
+</body>
+</html>
