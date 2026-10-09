@@ -1,0 +1,101 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.webgpu.js",
+          "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.webgpu.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from "three/webgpu";
+
+      /** グループを継承したサブクラス */
+      class MyGroup extends THREE.Group {
+        constructor() {
+          super();
+
+          const length = 12; //球体の数を少し増やすと波が綺麗に見えます
+          for (let i = 0; i < length; i++) {
+            const material = new THREE.MeshNormalMaterial();
+            const geometry = new THREE.SphereGeometry(30, 30, 30);
+            const mesh = new THREE.Mesh(geometry, material);
+
+            //配置座標を計算
+            const radian = (i / length) * Math.PI * 2;
+            const radius = 200;
+            
+            mesh.position.set(
+              radius * Math.cos(radian), //X座標
+              0,                         //初期Y座標（アニメーションで変動）
+              radius * Math.sin(radian)  //Z座標
+            );
+
+            //後から波の計算で参照できるよう、初期角度をユーザー定義プロパティとして持たせる
+            mesh.userData = { radian: radian };
+
+            //グループに追加する
+            this.add(mesh);
+          }
+        }
+      }
+
+      //サイズを指定
+      const width = 960;
+      const height = 540;
+
+      //レンダラーを作成
+      const renderer = new THREE.WebGPURenderer({
+        canvas: document.querySelector("#myCanvas"),
+      });
+      renderer.setPixelRatio(devicePixelRatio);
+      renderer.setSize(width, height);
+
+      renderer.setAnimationLoop(tick);
+
+      //シーンを作成
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000000);
+
+      //カメラを作成
+      const camera = new THREE.PerspectiveCamera(45, width / height);
+      camera.position.set(-100, 200, 500);
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+      //地面を作成
+      scene.add(new THREE.GridHelper(600));
+      scene.add(new THREE.AxesHelper(300));
+
+      //グループを作る
+      const group = new MyGroup();
+      //3D空間にグループを追加する
+      scene.add(group);
+
+      let time = 0;
+
+      //毎フレーム時に実行されるループイベントです
+      function tick() {
+        time += 0.05; // 波のスピード
+
+        //グループ全体の回転
+        group.rotation.y += 0.005;
+
+        //グループに含まれる個々の球体を波打たせる
+        group.children.forEach((mesh, index) => {
+          //各球体の配置角度と時間を組み合わせて高さを計算
+          const radian = mesh.userData.radian;
+          //sin波を使って上下にフワフワ動かす
+          mesh.position.y = Math.sin(time + radian * 2) * 50;
+        });
+
+        // レンダリング
+        renderer.render(scene, camera);
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+  </body>
+</html>
