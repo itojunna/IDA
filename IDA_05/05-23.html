@@ -7,8 +7,6 @@
     <script>
         //ページの読み込みを待つ
         window.addEventListener("DOMContentLoaded", init);
-        
-        function init() {
 
             //サイズを指定
             const width = 960;
@@ -17,7 +15,7 @@
             function init() {
                 let rot = 0; //角度
                 let mouseX = 0; //マウス座標
-            }
+
                 //マウス座標はマウスが動いた時のみ取得できる
                 document.addEventListener("mousemove", (event) => {
                 mouseX = event.pageX;
@@ -42,7 +40,9 @@
             const loader = new THREE.TextureLoader();
             const texture = loader.load("img/earthmap1k.jpeg");
             //マテリアルにテクスチャーを設定
-            const material= new THREE.MeshStandardMaterial({ map: texture });
+            const material= new THREE.MeshStandardMaterial({
+                map: texture
+            });
             //メッシュを作成
             const mesh = new THREE.Mesh(geometry, material);
             //３D空間にメッシュを作成
