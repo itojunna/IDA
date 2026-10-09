@@ -69,7 +69,7 @@
 
                 //中心からの角度と速度を計算
                 const angle = Math.atan2(targetY - centerY, targetX - centerX);
-                const speed = Math.random() * 2 + 0.5; 
+                const speed = Math.random() * 6 + 0.8; 
 
                 //配列「Particles」のi番目に格納
                 particles[i] = new Particle(radius, "rgb(" + getRandomColor() + ", 0, 0)", speed, angle);
@@ -78,7 +78,7 @@
                 particles[i].position.y = targetY;
             }
             
-            //最初はアニメーション（ループ）させず、1回のみ描画して止めておく
+            //最初はアニメーションさせず、1回のみ描画して止めておく
             firstDraw();
 
             //キャンバスをクリックしたら、アニメーションループ（崩れる処理）をスタート
