@@ -34,7 +34,9 @@
             const loader = new THREE.TextureLoader();
             const texture = loader.load("img/earthmap1k.jpeg");
             //マテリアルにテクスチャーを設定
-            const material= new THREE.MeshStandardMaterial({ map: texture });
+            const material= new THREE.MeshStandardMaterial({
+                map: texture
+            });
             //メッシュを作成
             const mesh = new THREE.Mesh(geometry, material);
             //３D空間にメッシュを作成
