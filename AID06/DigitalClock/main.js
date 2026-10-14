@@ -5,6 +5,9 @@ const createWindow = () => {
     const win= new BrowserWindow({
         width: 200,
         height: 100,
+        transparent: true, //ウィンドウの背景を透過
+        frame: false, //枠の無いウィンドウ
+        resizable: false, //ウィンドウのリサイズを禁止
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
