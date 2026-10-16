@@ -3,8 +3,8 @@ const { app, BrowserWindow } = require("electron/main")
 //ウィンドウの作成
 const createWindow = () => {
     const win= new BrowserWindow({
-        width: 200,
-        height: 100,
+        width: 270,
+        height: 620,
         transparent: true, //ウィンドウの背景を透過
         frame: false, //枠の無いウィンドウ
         resizable: false, //ウィンドウのリサイズを禁止
@@ -25,7 +25,8 @@ const createWindow = () => {
     })
 }
 
-//electron の準備ができた時の挙動。基本、createWindow()を呼び出す
+//electron の準備ができた時の挙動。
+// 基本、createWindow()を呼び出す
 app.whenReady().then(() => {
     createWindow()
 

@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron/main")
+const {app, BrowserWindow} = require("electron/main")
 
 //ウィンドウの作成
 const createWindow = () => {
