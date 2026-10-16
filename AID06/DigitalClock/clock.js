@@ -1,6 +1,7 @@
 //時計の描画処理スタート
 clock();
 
+
 function clock () {
     //現在日時を取得
     let d = new Date();
