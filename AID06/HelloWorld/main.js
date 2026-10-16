@@ -1,5 +1,6 @@
 const {app, BrowserWindow} = require("electron/main")
 
+
 //ウィンドウの作成
 const createWindow = () => {
     const win= new BrowserWindow({
