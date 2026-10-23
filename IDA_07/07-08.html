@@ -183,11 +183,11 @@
                     return dTip > dBase * 1.15; //先端が付け根よりも外側に伸びているか
                 };
 
-                const thumbOpen = isExtended(4, 2);
-                const indexOpen = isExtended(8, 5);
-                const middleOpen = isExtended(12, 9);
-                const ringOpen = isExtended(16, 13);
-                const pinkyOpen = isExtended(20, 17);
+                const thumbOpen = isExtended(4, 2); //親指
+                const indexOpen = isExtended(8, 5); //人差し指
+                const middleOpen = isExtended(12, 9); //中指
+                const ringOpen = isExtended(16, 13); //薬指
+                const pinkyOpen = isExtended(20, 17); //小指
 
                 //判定ロジック
                 if (!indexOpen && !middleOpen && !ringOpen && !pinkyOpen) {
