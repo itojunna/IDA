@@ -38,7 +38,7 @@
     <script src="js/model_pca_20_svm.js"></script> <!--顔モデル（※）の読み込み-->
 
     <script>
-        //もろもろの準備
+        //準備
         var video = document.getElementById("video"); //video要素を取得
         var canvas = document.getElementById("canvas"); //canvas要素の取得
         var context = canvas.getContext("2d"); //canvasのcontextの取得
@@ -48,7 +48,7 @@
         stampNose.src = "img/nose.png"; //鼻のスタンプ画像のファイル名
         stampEars.src = "img/ears.png"; //耳のスタンプ画像のファイル名
 
-        //getUserMedia によるカメラ映像の取得
+        //getUserMediaによるカメラ映像の取得
         var media = navigator.mediaDevices.getUserMedia({ //メディアデバイスを取得
             video: {facingMode: "user"}, 
             //カメラの映像を使う

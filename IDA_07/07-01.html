@@ -24,9 +24,9 @@
         <video id="video" width="400" height="300" autoplay></video>
     </div>
     <script>
-        //もろもろの準備
+        //準備
         var video = document.getElementById("video"); //video要素を取得
-        //getUserMedia によるカメラ映像の取得
+        //getUserMediaによるカメラ映像の取得
         var media = navigator.mediaDevices.getUserMedia({ //メディアデバイスを取得
             video: {facingMode: "user"}, 
             //カメラの映像を使う
