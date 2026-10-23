@@ -67,6 +67,7 @@
 
     <!--Three.jsの読み込み-->
     <script src="https://unpkg.com/three@0.137.4/build/three.min.js"></script>
+
     <!--MediaPipe Hands & Camera Utilsの読み込み-->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
@@ -99,19 +100,20 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(width, height);
 
+        //シーンとカメラの準備
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
-        camera.position.set(0, 0, 800);
+        camera.position.set(0, 0, 800); //左右上下0/奥行き800
 
         //---3種類のジオメトリを作成---
         //パー：立方体 (Cube)
-        const cubeGeo = new THREE.BoxGeometry(160, 160, 160);
+        const cubeGeo = new THREE.BoxGeometry(160, 160, 160); //幅・高さ・奥行き
         //グー：球体 (Sphere)
-        const sphereGeo = new THREE.SphereGeometry(100, 32, 32);
-        //人差し指：三角錐 (Cone)
-        const coneGeo = new THREE.ConeGeometry(100, 180, 32);
+        const sphereGeo = new THREE.SphereGeometry(100, 32, 32); //半径・横の分割数・縦の分割数
+        //人差し指+親指：三角錐 (Cone)
+        const coneGeo = new THREE.ConeGeometry(100, 180, 32); //底面の半径・高さ・周方向の分割数
 
-        //マテリアル (共通で法線方向の色になるNormalMaterialを使用)
+        //マテリアル
         const material = new THREE.MeshNormalMaterial();
 
         //オブジェクトのメッシュ作成（初期は非表示にするためスケール0）
@@ -123,13 +125,13 @@
         sphereMesh.scale.set(0, 0, 0);
         coneMesh.scale.set(0, 0, 0);
 
-        scene.add(cubeMesh);
-        scene.add(sphereMesh);
-        scene.add(coneMesh);
+        scene.add(cubeMesh); //立方体
+        scene.add(sphereMesh); //球体
+        scene.add(coneMesh); //三角錐
 
         //現在どの形を表示するか ("cube" | "sphere" | "cone" | "none")
-        let currentShape = "none";
-        let targetPos = { x: 0, y: 0 };
+        let currentShape = "none"; //初期値・ジェスチャーリアルタイムでの切り替わり
+        let targetPos = { x: 0, y: 0 }; //MediaPipeで手の位置検出・targetPos の中身が手のひらの中心座標に更新
 
         //---カメラの取得---
         const video = document.getElementById("video");
@@ -138,9 +140,6 @@
             audio: false
         }).then((stream) => {
             video.srcObject = stream;
-        }).catch((err) => {
-            console.error("カメラの取得に失敗しました:", err);
-            document.getElementById("status").innerText = "カメラエラー";
         });
 
         //---MediaPipe Handsによるジェスチャー判定---
