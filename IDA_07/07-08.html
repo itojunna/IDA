@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ジェスチャーで変化するAR 3Dオブジェクト</title>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: sans-serif;
+        }
+        /*カメラ映像と3Dcanvasを重ね合わせるコンテナ*/
+        #container {
+            position: relative;
+            width: 640px;
+            height: 480px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            background: #000;
+        }
+        /*カメラ映像（ビデオ）*/
+        #video {
+            transform: scaleX(-1); /*左右反転*/
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: block;
+        }
+        /*3D描画用のcanvas*/
+        #three-canvas {
+            transform: scaleX(-1); /*映像の反転に合わせる*/
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /*マウス操作を透過*/
+        }
+        .info {
+            margin-top: 15px;
+            color: #aaa;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .badge {
+            display: inline-block;
+            background: #333;
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: #4cd137;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+    </style>
+
+    <!--Three.jsの読み込み-->
+    <script src="https://unpkg.com/three@0.137.4/build/three.min.js"></script>
+    <!--MediaPipe Hands & Camera Utilsの読み込み-->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div id="container">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="three-canvas"></canvas>
+    </div>
+
+    <div class="info">
+        手の形を変えると3Dオブジェクトが変化します。<br>
+        ✊ <b>手を握る（グー）</b>：球体 ☝️ <b>人差し指を立てる</b>：三角錐  🖐️ <b>手を開く（パー）</b>：立方体<br>
+        <div id="status" class="badge">認識中...</div>
+    </div>
+
+    <script>
+        const width = 640;
+        const height = 480;
+
+        //---Three.jsの初期設定---
+        const canvasElement = document.querySelector("#three-canvas");
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvasElement,
+            alpha: true,
+            antialias: true
+        });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(width, height);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+        camera.position.set(0, 0, 800);
+
+        //---3種類のジオメトリを作成---
+        //パー：立方体 (Cube)
+        const cubeGeo = new THREE.BoxGeometry(160, 160, 160);
+        //グー：球体 (Sphere)
+        const sphereGeo = new THREE.SphereGeometry(100, 32, 32);
+        //人差し指：三角錐 (Cone)
+        const coneGeo = new THREE.ConeGeometry(100, 180, 32);
+
+        //マテリアル (共通で法線方向の色になるNormalMaterialを使用)
+        const material = new THREE.MeshNormalMaterial();
+
+        //オブジェクトのメッシュ作成（初期は非表示にするためスケール0）
+        const cubeMesh = new THREE.Mesh(cubeGeo, material);
+        const sphereMesh = new THREE.Mesh(sphereGeo, material);
+        const coneMesh = new THREE.Mesh(coneGeo, material);
+
+        cubeMesh.scale.set(0, 0, 0);
+        sphereMesh.scale.set(0, 0, 0);
+        coneMesh.scale.set(0, 0, 0);
+
+        scene.add(cubeMesh);
+        scene.add(sphereMesh);
+        scene.add(coneMesh);
+
+        //現在どの形を表示するか ("cube" | "sphere" | "cone" | "none")
+        let currentShape = "none";
+        let targetPos = { x: 0, y: 0 };
+
+        //---カメラの取得---
+        const video = document.getElementById("video");
+        navigator.mediaDevices.getUserMedia({
+            video: { width: width, height: height, facingMode: "user" },
+            audio: false
+        }).then((stream) => {
+            video.srcObject = stream;
+        }).catch((err) => {
+            console.error("カメラの取得に失敗しました:", err);
+            document.getElementById("status").innerText = "カメラエラー";
+        });
+
+        //---MediaPipe Handsによるジェスチャー判定---
+        const hands = new Hands({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        });
+
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 0,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
+
+        hands.onResults((results) => {
+            const statusEl = document.getElementById("status");
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                const lm = results.multiHandLandmarks[0];
+
+                //手のひらの中心（手首0と各指の付け根の平均として簡易計算、またはMCPの平均）
+                const wrist = lm[0];
+                const palmCenter = {
+                    x: (lm[0].x + lm[5].x + lm[17].x) / 3,
+                    y: (lm[0].y + lm[5].y + lm[17].y) / 3
+                };
+
+                //座標を画面ピクセルに変換
+                targetPos.x = (palmCenter.x - 0.5) * -width;
+                targetPos.y = (palmCenter.y - 0.5) * -height;
+
+                //指の曲がり具合を判定する関数（手首からの距離でチェック）
+                //各指の先端(4, 8, 12, 16, 20)と付け根(2, 5, 9, 13, 17)の距離を比較
+                const isExtended = (tipIdx, pipIdx) => {
+                    const tip = lm[tipIdx];
+                    const base = lm[pipIdx];
+                    const w = lm[0];
+                    const dTip = Math.hypot(tip.x - w.x, tip.y - w.y, tip.z - w.z);
+                    const dBase = Math.hypot(base.x - w.x, base.y - w.y, base.z - w.z);
+                    return dTip > dBase * 1.15; //先端が付け根よりも外側に伸びているか
+                };
+
+                const thumbOpen = isExtended(4, 2);
+                const indexOpen = isExtended(8, 5);
+                const middleOpen = isExtended(12, 9);
+                const ringOpen = isExtended(16, 13);
+                const pinkyOpen = isExtended(20, 17);
+
+                //判定ロジック
+                if (!indexOpen && !middleOpen && !ringOpen && !pinkyOpen) {
+                    //全ての指を閉じている ＝ グー
+                    currentShape = "sphere";
+                    statusEl.innerText = "✊ 球体 (Sphere)";
+                } else if (indexOpen && !middleOpen && !ringOpen && !pinkyOpen) {
+                    //人差し指だけ立っている ＝ 人差し指
+                    currentShape = "cone";
+                    statusEl.innerText = "☝️ 三角錐 (Cone)";
+                } else if (indexOpen && middleOpen && ringOpen && pinkyOpen) {
+                    //指が開いている ＝ パー
+                    currentShape = "cube";
+                    statusEl.innerText = "🖐️ 立方体 (Cube)";
+                } else {
+                    //その他の形
+                    currentShape = "none";
+                    statusEl.innerText = "認識中...";
+                }
+
+            } else {
+                currentShape = "none";
+                statusEl.innerText = "手を映してください";
+            }
+        });
+
+        //カメラフレームをMediaPipeへ流すループ
+        const cameraUtils = new Camera(video, {
+            onFrame: async () => {
+                if (video.paused || video.ended) return;
+                await hands.send({ image: video });
+            },
+            width: width,
+            height: height
+        });
+        cameraUtils.start();
+
+        //---毎フレームの描画・イージング・アニメーションループ---
+        function tick() {
+            requestAnimationFrame(tick);
+
+            //各メッシュの目標スケールを設定（選ばれているものは1.0、それ以外は0.0）
+            const targetCubeS = (currentShape === "cube") ? 1.0 : 0.0;
+            const targetSphereS = (currentShape === "sphere") ? 1.0 : 0.0;
+            const targetConeS = (currentShape === "cone") ? 1.0 : 0.0;
+
+            //スケールのなめらかな遷移（イージング）
+            cubeMesh.scale.x += (targetCubeS - cubeMesh.scale.x) * 0.15;
+            cubeMesh.scale.y += (targetCubeS - cubeMesh.scale.y) * 0.15;
+            cubeMesh.scale.z += (targetCubeS - cubeMesh.scale.z) * 0.15;
+
+            sphereMesh.scale.x += (targetSphereS - sphereMesh.scale.x) * 0.15;
+            sphereMesh.scale.y += (targetSphereS - sphereMesh.scale.y) * 0.15;
+            sphereMesh.scale.z += (targetSphereS - sphereMesh.scale.z) * 0.15;
+
+            coneMesh.scale.x += (targetConeS - coneMesh.scale.x) * 0.15;
+            coneMesh.scale.y += (targetConeS - coneMesh.scale.y) * 0.15;
+            coneMesh.scale.z += (targetConeS - coneMesh.scale.z) * 0.15;
+
+            //位置を手の中心になめらかに追従させる
+            const lerpSpeed = 0.2;
+            [cubeMesh, sphereMesh, coneMesh].forEach(mesh => {
+                mesh.position.x += (targetPos.x - mesh.position.x) * lerpSpeed;
+                mesh.position.y += (targetPos.y - mesh.position.y) * lerpSpeed;
+
+                //回転アニメーション
+                mesh.rotation.y += 0.015;
+                mesh.rotation.x += 0.008;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        tick();
+    </script>
+</body>
+</html>
