@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ジェスチャーで変化するAR 3Dオブジェクト</title>
+    <title>ジェスチャーで変化する3Dオブジェクト</title>
     <style>
         body {
             margin: 0;
@@ -81,7 +81,7 @@
 
     <div class="info">
         手の形を変えると3Dオブジェクトが変化します。<br>
-        ✊ <b>手を握る（グー）</b>：球体 ☝️ <b>人差し指を立てる</b>：三角錐 🖐️ <b>手を開く（パー）</b>：立方体<br>
+        ✊🏻 <b>手を握る（グー）</b>：球体 ✌🏻 <b>人差し指を立てる</b>：三角錐 ✋🏻 <b>手を開く（パー）</b>：立方体<br>
         <div id="status" class="badge">認識中</div>
     </div>
 
@@ -193,15 +193,15 @@
                 if (!indexOpen && !middleOpen && !ringOpen && !pinkyOpen) {
                     //全ての指を閉じている ＝ グー
                     currentShape = "sphere";
-                    statusEl.innerText = "✊ 球体 (Sphere)";
+                    statusEl.innerText = "✊🏻 球体 (Sphere)";
                 } else if (indexOpen && !middleOpen && !ringOpen && !pinkyOpen) {
                     //人差し指だけ立っている ＝ 人差し指
                     currentShape = "cone";
-                    statusEl.innerText = "☝️ 三角錐 (Cone)";
+                    statusEl.innerText = "✌🏻 三角錐 (Cone)";
                 } else if (indexOpen && middleOpen && ringOpen && pinkyOpen) {
                     //指が開いている ＝ パー
                     currentShape = "cube";
-                    statusEl.innerText = "🖐️ 立方体 (Cube)";
+                    statusEl.innerText = "✋🏻 立方体 (Cube)";
                 } else {
                     //その他の形
                     currentShape = "none";
