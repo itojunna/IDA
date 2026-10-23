@@ -167,10 +167,6 @@
                     y: (lm[0].y + lm[5].y + lm[17].y) / 3
                 };
 
-                //座標を画面ピクセルに変換
-                targetPos.x = (palmCenter.x - 0.5) * -width;
-                targetPos.y = (palmCenter.y - 0.5) * -height;
-
                 //指の曲がり具合を判定する関数（手首からの距離でチェック）
                 //各指の先端(4, 8, 12, 16, 20)と付け根(2, 5, 9, 13, 17)の距離を比較
                 const isExtended = (tipIdx, pipIdx) => {
@@ -182,6 +178,7 @@
                     return dTip > dBase * 1.15; //先端が付け根よりも外側に伸びているか
                 };
 
+                //それぞれの指の開き具合の判定
                 const thumbOpen = isExtended(4, 2); //親指
                 const indexOpen = isExtended(8, 5); //人差し指
                 const middleOpen = isExtended(12, 9); //中指
@@ -233,7 +230,7 @@
             const targetSphereS = (currentShape === "sphere") ? 1.0 : 0.0;
             const targetConeS = (currentShape === "cone") ? 1.0 : 0.0;
 
-            //スケールのなめらかな遷移（イージング）
+            //スケール（イージング）
             cubeMesh.scale.x += (targetCubeS - cubeMesh.scale.x) * 0.15;
             cubeMesh.scale.y += (targetCubeS - cubeMesh.scale.y) * 0.15;
             cubeMesh.scale.z += (targetCubeS - cubeMesh.scale.z) * 0.15;
