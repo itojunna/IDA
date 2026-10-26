@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox</title>
+</head>
+<style>
+    .flex-box {
+        background-color: #eee;
+        padding: 0px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-direction: row-reverse;
+        flex-wrap: wrap;
+        height: 100vh;
+        align-content: flex-start;
+    }
+    .flex-item {
+        padding: 10px;
+        color: #fff;
+        margin: 10px;
+        border-radius: 5px;
+        width: 30%;
+    }
+    body {
+        margin: 0;
+    }
+    * {
+        box-sizing: border-box;
+    }
+    .item1 {background-color: blue;}item1 {background-color: blue;}
+    .item2 {background-color: green;}
+    .item3 {background-color: darkblue;}
+    .item4 {background-color: darkred;}
+</style>
+<body>
+    <div class="flex-box">
+        <div class="flex-item item1">
+            1. Lorem ipsum dolor sit amet consectetur adipisicing elit.Asperiores, eum?
+        </div>
+        <div class="flex-item item2">
+            2. Lorem ipsum dolor sit amet consectetur, adipisicing elit.Dolores facere numquam assumenda delectus totam namnisi accusamus est illum expedita!
+        </div>
+        <div class="flex-item item3">
+            3. Lorem ipsum dolor sit amet consectetur adipisicing elit.Debitis vel ducimus impedit omnis esse velit est, quoat modi maxime tempore dicta labore beatae ipsa minimamaiores aut quisquam animi!
+        </div>
+    </div>
+    <div class="flex-item item4">
+        <p>
+            4. Lorem ipsum dolor sit amet consectetur adipisicingelit. 
+            Dolor natus reprehenderit voluptate ab nonmolestias incidunt corrupti, distinctio, nobis
+            quidem tempore rerum facere perferendis atqueharum quisquam magni facilis fugit veniam possimus
+            perspiciatis ea accusantium odit quia. Namaliquid ea quod dolorem impedit asperiores! Ametquam sequi optio vitae consectetur!
+        </p>
+    </div>
+</body>
+</html>

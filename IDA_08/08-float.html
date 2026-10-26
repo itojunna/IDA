@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>float</title>
+</head>
+<style>
+    .child {
+        border: 1px solid black;
+        float: left;
+        width: 25%;
+        padding: 10px;
+        margin-right: 10px;
+    }
+    .columns::after {
+        content: "";
+        clear: both;
+        display: block;
+    }
+</style>
+<body>
+    <div class="columns">
+        <div class="child">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.Asperiores, eum?
+        </div>
+        <div class="child">
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit.Dolores facere numquam assumenda delectus totam namnisi accusamus est illum expedita!
+        </div>
+        <div class="child">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.Debitis vel ducimus impedit omnis esse velit est, quoat modi maxime tempore dicta labore beatae ipsa minimamaiores aut quisquam animi!
+        </div>
+    </div>
+    <div>
+        <p>
+            Lorem ipsum dolor sit amet consectetur adipisicingelit. 
+            Dolor natus reprehenderit voluptate ab nonmolestias incidunt corrupti, distinctio, nobis
+            quidem tempore rerum facere perferendis atqueharum quisquam magni facilis fugit veniam possimus
+            perspiciatis ea accusantium odit quia. Namaliquid ea quod dolorem impedit asperiores! Ametquam sequi optio vitae consectetur!
+        </p>
+    </div>
+</body>
+</html>
