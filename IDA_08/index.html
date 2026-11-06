@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive Site Wireframe</title>
+    <style>
+        /*基礎リセットとダークテーマ*/
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        /*ヘッダー*/
+        header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        /*ナビゲーションメニュー*/
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            gap: 25px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-bottom: 2px solid transparent;
+            transition: color 0.3s, border-color 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover, nav a.active {
+            color: #fff;
+            border-color: #fff;
+        }
+
+        /*メインコンテンツ*/
+        main {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .section-header p {
+            color: #888;
+            font-size: 0.9rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /*グリッドカード*/
+        .grid-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background-color: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #555;
+        }
+
+        /*画像が入るグレーの部分*/
+        .placeholder-img {
+            width: 100%;
+            height: 180px;
+            background-color: #333333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #f0f0f0;
+        }
+
+        .card-content p {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .card-link {
+            display: inline-block;
+            font-size: 0.8rem;
+            color: #bbb;
+            text-decoration: none;
+            border-bottom: 1px solid #555;
+            padding-bottom: 2px;
+        }
+
+        /*モーダル（詳細ポップアップ）*/
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #1c1c1c;
+            border: 1px solid #444;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .modal-placeholder {
+            width: 100%;
+            height: 220px;
+            background-color: #2b2b2b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .modal-content p {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: inherit;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background-color: #555;
+        }
+
+        /*フッター*/
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid #333;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ヘッダー -->
+    <header>
+        <h1 id="site-title">THE CUTTING ROOM FLOOR</h1>
+        <nav>
+            <ul>
+                <li><a class="nav-tab active" data-target="home">HOME</a></li>
+                <li><a class="nav-tab" data-target="project-a">PROJECT A</a></li>
+                <li><a class="nav-tab" data-target="project-b">PROJECT B</a></li>
+                <li><a class="nav-tab" data-target="artbook">ARTBOOK</a></li>
+                <li><a class="nav-tab" data-target="archives">ARCHIVES</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!--メイン-->
+    <main>
+        <section class="section-header">
+            <h2 id="page-heading">WELCOME TO THE ARCHIVE</h2>
+            <p id="page-desc">This site is dedicated to unused levels, concepts, discarded assets, and materials from various projects.</p>
+        </section>
+
+        <!--カード一覧-->
+        <div class="grid-section" id="card-container">
+        </div>
+    </main>
+
+    <!--モーダル（詳細ポップアップ）-->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">TITLE</h2>
+            <div class="modal-placeholder">LARGE IMAGE / DATA VIEW</div>
+            <p id="modalDesc">Description goes here...</p>
+            <button class="close-btn" id="closeBtn">CLOSE</button>
+        </div>
+    </div>
+
+    <!--フッター-->
+    <footer>
+        <p>THIS PROJECT WAS MADE AS A WIREFRAME. THIS IS NOT OFFICIAL.</p>
+    </footer>
+
+    <!--画面切り替えとモーダルの動きを制御するJavaScript-->
+    <script>
+        //各タブで表示するコンテンツのデータ
+        const siteData = {
+            home: {
+                heading: "WELCOME TO THE ARCHIVE",
+                desc: "Explore recent updates, featured drafts, and unreleased materials across all projects.",
+                cards: [
+                    { title: "Featured Update #01", desc: "Latest discovered assets from the 2024 build iterations.", img: "FEATURED IMAGE" },
+                    { title: "Developer's Log", desc: "Notes and debug logs recovered from early development phases.", img: "LOG IMAGE" },
+                    { title: "Unused Audio Track", desc: "Unreleased background tracks cut from the final release.", img: "AUDIO ICON / GIF" }
+                ]
+            },
+            "project-a": {
+                heading: "PROJECT A: UNTOLD STORY",
+                desc: "Unused map data, beta layouts, and developer debug rooms from Project A.",
+                cards: [
+                    { title: "Debug Room Alpha", desc: "An early testing area featuring placeholder textures and scripts.", img: "MAP / GIF" },
+                    { title: "Cut Boss Arena", desc: "A discarded arena layout found deep inside the game's code.", img: "ARENA IMAGE" },
+                    { title: "Unused NPC Dialogues", desc: "Branches of conversations that were cut before localization.", img: "TEXT DATA" }
+                ]
+            },
+            "project-b": {
+                heading: "PROJECT B: SHADOWS",
+                desc: "Early concept stages and discarded mechanics from Project B.",
+                cards: [
+                    { title: "Prototype Mechanics", desc: "Test footage of gravity-shifting physics that were dropped.", img: "GIF / VIDEO" },
+                    { title: "Scrapped Enemy Design", desc: "Monsters that didn't make the cut due to hardware limitations.", img: "SKETCH IMAGE" },
+                    { title: "Early Level Layout", desc: "An extremely rough blocked-out stage before redesign.", img: "WIREFRAME" }
+                ]
+            },
+            artbook: {
+                heading: "CONCEPT ARTBOOK",
+                desc: "Unseen sketches, early character designs, and background concept art collections.",
+                cards: [
+                    { title: "Protagonist Roughs", desc: "Initial pencil sketches exploring different hairstyles and gear.", img: "ART IMAGE" },
+                    { title: "Background Concepts", desc: "Atmospheric painting tests for the ruined city stage.", img: "BACKGROUND" },
+                    { title: "UI Wireframes", desc: "Early menu designs that were considered during pre-production.", img: "UI SKETCH" }
+                ]
+            },
+            archives: {
+                heading: "ALL ARCHIVES",
+                desc: "Complete master directory of all raw dumps, files, and hidden documents.",
+                cards: [
+                    { title: "Source Code Snippets", desc: "Uncompiled script fragments left behind in build folders.", img: "CODE DUMP" },
+                    { title: "Unused Texture Atlas", desc: "High-resolution texture sheets that were left out of packages.", img: "TEXTURES" },
+                    { title: "Changelog 2022-2025", desc: "Historical records of internal patches and modifications.", img: "DOCUMENT" }
+                ]
+            }
+        };
+
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const pageHeading = document.getElementById('page-heading');
+        const pageDesc = document.getElementById('page-desc');
+        const cardContainer = document.getElementById('card-container');
+        
+        const modal = document.getElementById('detailModal');
+        const closeBtn = document.getElementById('closeBtn');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
+
+        //画面（カード一覧）を更新する関数
+        function renderPage(key) {
+            const data = siteData[key];
+            if (!data) return;
+
+            pageHeading.textContent = data.heading;
+            pageDesc.textContent = data.desc;
+            cardContainer.innerHTML = '';
+
+            data.cards.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.setAttribute('data-title', item.title);
+                card.setAttribute('data-desc', item.desc);
+                
+                card.innerHTML = `
+                    <div class="placeholder-img">${item.img}</div>
+                    <div class="card-content">
+                        <h3>${item.title}</h3>
+                        <p>${item.desc}</p>
+                        <span class="card-link">VIEW ARCHIVE &rarr;</span>
+                    </div>
+                `;
+
+                //カードクリック時のモーダル処理
+                card.addEventListener('click', () => {
+                    modalTitle.textContent = item.title;
+                    modalDesc.textContent = item.desc;
+                    modal.classList.add('active');
+                });
+
+                cardContainer.appendChild(card);
+            });
+        }
+
+        //タブをクリックしたときの切り替え処理
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                navTabs.forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+
+                const targetKey = e.target.getAttribute('data-target');
+                renderPage(targetKey);
+            });
+        });
+
+        //モーダルを閉じる処理
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        //初期表示（HOME）
+        renderPage('home');
+    </script>
+
+</body>
+</html>
